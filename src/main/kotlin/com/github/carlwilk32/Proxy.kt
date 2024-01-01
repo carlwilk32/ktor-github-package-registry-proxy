@@ -12,8 +12,8 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 
 fun main() {
-    val server = embeddedServer(Netty, port = 8080, module = Application::module)
-    server.start(wait = true)
+    embeddedServer(Netty, port = 8080, module = Application::module)
+        .start(wait = true)
 }
 
 fun Application.module() {
