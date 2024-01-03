@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - master
-
 jobs:
   deploy:
     name: Deploy app
@@ -27,4 +26,4 @@ jobs:
       - name: Push to Fly.io docker registry
         run: ./gradlew jib --image=$APP_IMAGE
       - name: Deploy app
-        run: flyctl deploy -i $APP_IMAGE
+        run: flyctl deploy -i $APP_IMAGE -e GITHUB_USER=${{ github.actor }} -e GITHUB_TOKEN=${{ secrets.PROXY_TOKEN }}
