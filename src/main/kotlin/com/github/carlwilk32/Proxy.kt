@@ -5,26 +5,24 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.util.*
 
-fun main() {
-    embeddedServer(Netty, port = 8080, module = Application::module)
-        .start(wait = true)
-}
+fun main(args: Array<String>): Unit = EngineMain.main(args)
+
 
 fun Application.module() {
+    val githubToken = environment.config.property("github.token").getString()
+    val githubUsername = environment.config.property("github.user").getString()
+
     val client = HttpClient() { followRedirects = false }
-    val githubToken = "undefined"
-    val githubUsername = "undefined"
 
     intercept(ApplicationCallPipeline.Call) {
         val response = client.request("https://maven.pkg.github.com/${githubUsername}/pkg${call.request.uri}") {
             headers {
-                append(HttpHeaders.Authorization, "token ${githubToken}")
+                append(HttpHeaders.Authorization, "token $githubToken")
                 append(HttpHeaders.Host, "maven.pkg.github.com")
             }
         }
