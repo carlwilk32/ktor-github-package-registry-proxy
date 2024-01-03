@@ -23,8 +23,8 @@ jobs:
       - name: Setup Fly.io tools
         uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Auth to Fly.io
-        run: fly auth docker
+        run: flyctl auth docker
       - name: Push to Fly.io docker registry
         run: ./gradlew jib --image=$APP_IMAGE
       - name: Deploy app
-        run: fly deploy -i $APP_IMAGE
+        run: flyctl deploy -i $APP_IMAGE
