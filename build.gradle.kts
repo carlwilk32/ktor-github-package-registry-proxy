@@ -17,8 +17,10 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-jib.from {
-    image = "openjdk:11"
+ktor {
+    docker {
+        jreVersion.set(JavaVersion.VERSION_11)
+    }
 }
 
 repositories {
