@@ -1,4 +1,7 @@
 name: fly.io deploy
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  APP_IMAGE: registry.fly.io/ktor-github-package-registry-proxy:${{ github.sha }}
 on:
   push:
     branches:
@@ -9,8 +12,19 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only -e GITHUB_USER=${{ github.actor }} -e GITHUB_TOKEN=${{ secrets.PROXY_TOKEN }}
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+          cache: 'gradle'
+      - name: Setup Fly.io tools
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Auth to Fly.io
+        run: fly auth docker
+      - name: Push to Fly.io docker registry
+        run: ./gradlew jib --image=$APP_IMAGE
+      - name: Deploy app
+        run: fly deploy -i $APP_IMAGE
